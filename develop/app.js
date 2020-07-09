@@ -10,9 +10,91 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+var employees = [];
+const managerQuestions = [
+    {
+        type: "input",
+        name: "managerName",
+        message: "Enter the manager's name."
+    },
+    {
+        type: "input",
+        name: "managerEmail",
+        message: "Enter the manager's email."
+    },
+    {
+        type: "input",
+        name: "officeNumber",
+        message: "Enter the manager's office number."
+    },
+    {
+        type: "list",
+        name: "moreEmployees",
+        message: "Do you need to add another employee profile?",
+        choices: ["Yes","No"]
+    }
+]
+const employeeQuestions = [
+    {
+        type: "input",
+        name: "employeeName",
+        message: "Enter the empoyee's name."
+    },
+    {
+        type: "input",
+        name: "employeeEmail",
+        message: "Enter the employee's email."
+    },
+    {
+        type: "input",
+        name: "gitHub",
+        message: "Enter the employee's gitHub username."
+    },
+    {
+        type: "list",
+        name: "role",
+        message: "What is this employee's title?",
+        choices: ["Engineer","Intern"]
+    },
+    {
+        when: input => {
+            return input.role === "Intern"
+        },
+        type: "input",
+        name: "schoolName",
+        message: "Enter the name of this intern's school." 
+
+    },
+    {
+        type: "list",
+        name: "moreEmployees",
+        message: "Do you need to add another employee profile?",
+        choices: ["Yes","No"]   
+    }
+]
+
+// function for prompting questions and pushing profiles into array
+function buildList() {
+    inquirer.prompt(employeeQuestions).then(response => {
+        if (response.role === "Engineer") {
+            var addEmployee = new Engineer(response.name, employees.length +1, response.email, response.github)
+        } else {
+            var addEmployee = new Intern(response.name, employees.length +1, response.email, response.schoolName)
+        }
+        employees.push(addEmployee);
+        if (response.moreEmployees === "Yes") {
+            console.log(" ");
+            buildList();
+        } else {
+            render; 
+        }
+    })
+}
+buildList();
+
+
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
