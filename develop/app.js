@@ -45,7 +45,7 @@ const employeeQuestions = [
     {
         type: "input",
         name: "employeeName",
-        message: "Enter the empoyee's name."
+        message: "Enter the employee's name."
     },
     {
         type: "input",

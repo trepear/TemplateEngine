@@ -3,7 +3,7 @@
 ## YouTube Demo video
 https://www.youtube.com/watch?v=hNxvwogDw0s&feature=youtu.be
 
-This project utilized node.js in order to create easy to read templates for populated with employee information.
+This project utilized node.js in order to create easy to read templates populated with employee information.
 
 ## Installation
 ```bash
