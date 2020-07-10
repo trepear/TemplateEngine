@@ -26,6 +26,11 @@ const managerQuestions = [
     },
     {
         type: "input",
+        name: "id",
+        message: "Enter manager's ID number."
+    },
+    {
+        type: "input",
         name: "officeNumber",
         message: "Enter the manager's office number."
     },
@@ -49,8 +54,8 @@ const employeeQuestions = [
     },
     {
         type: "input",
-        name: "gitHub",
-        message: "Enter the employee's gitHub username."
+        name: "id",
+        message: "Enter employee's ID number."
     },
     {
         type: "list",
@@ -68,6 +73,11 @@ const employeeQuestions = [
 
     },
     {
+        type: "input",
+        name: "gitHub",
+        message: "Enter the employee's gitHub username."
+    },
+    {
         type: "list",
         name: "moreEmployees",
         message: "Do you need to add another employee profile?",
@@ -79,39 +89,45 @@ const employeeQuestions = [
 function buildList() {
     inquirer.prompt(employeeQuestions).then(response => {
         if (response.role === "Engineer") {
-            var addEmployee = new Engineer(response.name, employees.length +1, response.email, response.github)
+            var addEmployee = new Engineer(response.employeeName, employees.length +1, response.employeeEmail, response.gitHub)
         } else {
-            var addEmployee = new Intern(response.name, employees.length +1, response.email, response.schoolName)
+            var addEmployee = new Intern(response.employeeName, employees.length +1, response.employeeEmail, response.schoolName)
         }
         employees.push(addEmployee);
         if (response.moreEmployees === "Yes") {
             console.log(" ");
             buildList();
         } else {
-            render; 
+             if (!fs.existsSync(OUTPUT_DIR)) {
+                fs.mkdirSync(OUTPUT_DIR)
+              }
+            fs.writeFile(outputPath, render(employees), function (err){
+                if(err) {
+                    throw err;
+                }
+            })
         }
     })
 }
-buildList();
+// function for initializing the program and prompting first set of questions
+function init() {
+    inquirer.prompt(managerQuestions).then(response => {
+        let teamManager = new Manager(response.managerName, response.id, response.managerEmail, response.officeNumber);
+        employees.push(teamManager);
+        console.log(" ");
+        if(response.moreEmployees === "Yes") {
+            buildList()
+        } else {
+            if (!fs.existsSync(OUTPUT_DIR)) {
+                fs.mkdirSync(OUTPUT_DIR)
+              }
+            fs.writeFile(outputPath, render(employees), function (err) {
+                if(err) {
+                    throw err
+                }
 
-
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+            })
+        }
+    })
+}
+init();
